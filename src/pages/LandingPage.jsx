@@ -4,12 +4,12 @@ import { Box, Server, Apple, ArrowRight, Check, Bot, Clock, Archive, Zap } from 
 
 const LandingPage = ({ onEnter }) => {
   const plans = [
-    { name: '⏳ FREE', price: '0,00€', features: ['Google Cloud Sandbox', 'XFCE Desktop', 'CPU 30% max', 'Uptime 24/7', 'Web RDP/VNC'], color: 'border-white/10' },
-    { name: '🚀 FREE ADVANCED', price: '0,00€', features: ['Google Cloud', 'XFCE Desktop', 'CPU 60% max', 'Max 2 ore/giorno', 'MySQL / MariaDB'], color: 'border-white/10' },
+    { name: '🍏 MAC HOME', price: '2,00€/mese', features: ['Apple Silicon Shared', 'macOS con GUI Browser', 'CPU 30%', 'SSH disattivato', '⚠️ PREVISTO IN ARRIVO'], color: 'border-purple-500/50', badge: 'In Arrivo' },
+    { name: '🍏 MAC DEV', price: '3,00€/mese', features: ['Apple Silicon Shared', 'macOS Headless', 'Xcode CLI · Homebrew', 'SSH dedicato', '⚠️ PREVISTO IN ARRIVO'], color: 'border-purple-500/50', badge: 'In Arrivo' },
     { name: '👑 HOME', price: '1,50€/mese', features: ['Scaleway', 'XFCE Desktop', 'CPU 100%', 'SSH dedicato', 'Tutte le porte sbloccate', 'MySQL · PostgreSQL · Redis'], color: 'border-jupiter-500/50 jupiter-glow' },
     { name: '📦 PAAS', price: 'Wallet a consumo', features: ['Scaleway', 'Headless (No GUI)', 'CPU 100%', 'Docker · Node · Python · Go', 'Sleep mode automatico'], color: 'border-blue-500/30' },
-    { name: '🍏 MAC HOME', price: '2,00€/mese', features: ['Apple Silicon Shared', 'macOS con GUI Browser', 'CPU 30%', 'SSH disattivato', '⚠️ PREVISTO IN ARRIVO'], color: 'border-purple-500/20' },
-    { name: '🍏 MAC DEV', price: '3,00€/mese', features: ['Apple Silicon Shared', 'macOS Headless', 'Xcode CLI · Homebrew', 'SSH dedicato', '⚠️ PREVISTO IN ARRIVO'], color: 'border-purple-500/20' },
+    { name: '⏳ FREE', price: '0,00€', features: ['Google Cloud Sandbox', 'XFCE Desktop', 'CPU 30% max', 'Uptime 24/7', 'Web RDP/VNC'], color: 'border-white/10' },
+    { name: '🚀 FREE ADVANCED', price: '0,00€', features: ['Google Cloud', 'XFCE Desktop', 'CPU 60% max', 'Max 2 ore/giorno', 'MySQL / MariaDB'], color: 'border-white/10' },
   ];
 
   return (
@@ -138,18 +138,23 @@ const LandingPage = ({ onEnter }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {plans.map((plan, i) => (
-            <Card key={i} className={`p-8 hover:bg-white/[0.05] transition-all border ${plan.color}`}>
+            <Card key={i} className={`p-8 hover:bg-white/[0.05] transition-all border relative ${plan.color}`}>
+              {plan.badge && (
+                <span className="absolute top-4 right-4 text-[10px] font-black uppercase tracking-widest bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2 py-1 rounded-full">
+                  {plan.badge}
+                </span>
+              )}
               <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-              <div className="text-3xl font-bold text-jupiter-400 mb-6">{plan.price}</div>
+              <div className={`text-3xl font-bold mb-6 ${plan.badge ? 'text-purple-400' : 'text-jupiter-400'}`}>{plan.price}</div>
               <ul className="space-y-4 mb-8">
                 {plan.features.map((f, j) => (
                   <li key={j} className="flex items-center gap-3 text-gray-400 text-sm">
-                    <Check size={16} className="text-jupiter-500 shrink-0" />
+                    <Check size={16} className={`shrink-0 ${plan.badge ? 'text-purple-500' : 'text-jupiter-500'}`} />
                     {f}
                   </li>
                 ))}
               </ul>
-              <Button variant="secondary" className="w-full py-3" onClick={onEnter}>Configura</Button>
+              <Button variant="secondary" className="w-full py-3" onClick={onEnter}>{plan.badge ? 'Entra in Lista d\'Attesa' : 'Configura'}</Button>
             </Card>
           ))}
         </div>
