@@ -20,6 +20,38 @@ import {
 const AppHosting = () => {
   const [appState, setAppState] = useState('creation'); // 'creation', 'active', 'caveau'
   const [selectedRuntime, setSelectedRuntime] = useState('Node.js');
+  const [files, setFiles] = useState([
+    { name: 'commands/', type: 'folder', size: '-', date: '2 min fa' },
+    { name: 'bot.py', type: 'file', size: '4.2 KB', date: '1 ora fa' },
+    { name: 'config.json', type: 'file', size: '128 B', date: '3 ore fa' },
+    { name: 'requirements.txt', type: 'file', size: '512 B', date: '1 giorno fa' },
+  ]);
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const newFile = {
+        name: file.name,
+        type: 'file',
+        size: `${(file.size / 1024).toFixed(1)} KB`,
+        date: 'Proprio ora'
+      };
+      setFiles([newFile, ...files]);
+    }
+  };
+
+  const createFolder = () => {
+    const folderName = prompt('Nome della cartella:');
+    if (folderName) {
+      const newFolder = {
+        name: folderName.endsWith('/') ? folderName : `${folderName}/`,
+        type: 'folder',
+        size: '-',
+        date: 'Proprio ora'
+      };
+      setFiles([newFolder, ...files]);
+    }
+  };
 
   const runtimes = [
     { name: 'Python', icon: '🐍' },
@@ -180,12 +212,23 @@ const AppHosting = () => {
                 <span className="text-jupiter-400 font-bold">mio-bot-discord</span>
               </div>
               <div className="flex gap-2">
-                <Button variant="secondary" className="px-3 py-1.5 text-xs flex items-center gap-2">
+                <Button
+                  variant="secondary"
+                  className="px-3 py-1.5 text-xs flex items-center gap-2"
+                  onClick={createFolder}
+                >
                   <Plus size={14} /> Nuova Cartella
                 </Button>
-                <Button className="px-3 py-1.5 text-xs flex items-center gap-2">
-                  <Upload size={14} /> Carica File
-                </Button>
+                <div className="relative">
+                  <input
+                    type="file"
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    onChange={handleFileUpload}
+                  />
+                  <Button className="px-3 py-1.5 text-xs flex items-center gap-2 pointer-events-none">
+                    <Upload size={14} /> Carica File
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -196,12 +239,7 @@ const AppHosting = () => {
                 <div className="col-span-3 text-right">Modificato</div>
               </div>
               <div className="divide-y divide-white/5">
-                {[
-                  { name: 'commands/', type: 'folder', size: '-', date: '2 min fa' },
-                  { name: 'bot.py', type: 'file', size: '4.2 KB', date: '1 ora fa' },
-                  { name: 'config.json', type: 'file', size: '128 B', date: '3 ore fa' },
-                  { name: 'requirements.txt', type: 'file', size: '512 B', date: '1 giorno fa' },
-                ].map((item, i) => (
+                {files.map((item, i) => (
                   <div key={i} className="grid grid-cols-12 gap-4 px-4 py-3 hover:bg-white/2 cursor-pointer transition-colors text-sm items-center">
                     <div className="col-span-6 flex items-center gap-3">
                       {item.type === 'folder' ? <Folder size={18} className="text-jupiter-500" /> : <File size={18} className="text-gray-500" />}
