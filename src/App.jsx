@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createHashRouter, RouterProvider, Navigate, useNavigate, Outlet } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import HomeDashboard from './pages/HomeDashboard';
 import AppHosting from './pages/AppHosting';
@@ -8,50 +9,77 @@ import WalletPage from './pages/WalletPage';
 import Wiki from './pages/Wiki';
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
+import DocsPage from './pages/DocsPage';
 
-function App() {
+// Dashboard layout con sidebar
+const DashboardLayout = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('home');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showLanding, setShowLanding] = useState(true);
 
-  if (showLanding && !isLoggedIn) {
-    return <LandingPage onEnter={() => setShowLanding(false)} />;
-  }
-
-  if (!isLoggedIn) {
-    return <AuthPage onLogin={() => setIsLoggedIn(true)} onBack={() => setShowLanding(true)} />;
-  }
-
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'home': return <HomeDashboard onNavigate={setActiveTab} />;
-      case 'app-hosting': return <AppHosting />;
-      case 'vps': return <VPSLinux />;
-      case 'mac': return <MacPlans />;
-      case 'wallet': return <WalletPage />;
-      case 'wiki': return <Wiki />;
-      default: return <HomeDashboard onNavigate={setActiveTab} />;
-    }
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    navigate(`/dashboard/${tab}`);
   };
 
   return (
     <div className="flex min-h-screen bg-space-950 text-white">
       <Sidebar
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        onLogout={() => {
-          setIsLoggedIn(false);
-          setShowLanding(true);
-        }}
+        setActiveTab={handleTabChange}
+        onLogout={() => navigate('/')}
       />
-
       <main className="flex-1 p-8 overflow-y-auto">
         <div className="max-w-6xl mx-auto">
-          {renderContent()}
+          <Outlet />
         </div>
       </main>
     </div>
   );
+};
+
+const router = createHashRouter([
+  { path: '/', element: <LandingPageWrapper /> },
+  { path: '/docs', element: <DocsPageWrapper /> },
+  { path: '/auth', element: <AuthPageWrapper /> },
+  {
+    path: '/dashboard',
+    element: <DashboardLayout />,
+    children: [
+      { index: true, element: <Navigate to="/dashboard/home" replace /> },
+      { path: 'home', element: <HomeDashboardWrapper /> },
+      { path: 'app-hosting', element: <AppHosting /> },
+      { path: 'vps', element: <VPSLinux /> },
+      { path: 'mac', element: <MacPlans /> },
+      { path: 'wallet', element: <WalletPage /> },
+      { path: 'wiki', element: <Wiki /> },
+    ],
+  },
+  { path: '*', element: <Navigate to="/" replace /> },
+]);
+
+// Wrapper components that inject navigate
+function LandingPageWrapper() {
+  const navigate = useNavigate();
+  return <LandingPage onEnter={() => navigate('/auth')} />;
+}
+
+function DocsPageWrapper() {
+  const navigate = useNavigate();
+  return <DocsPage onEnter={() => navigate('/auth')} />;
+}
+
+function AuthPageWrapper() {
+  const navigate = useNavigate();
+  return <AuthPage onLogin={() => navigate('/dashboard')} onBack={() => navigate('/')} />;
+}
+
+function HomeDashboardWrapper() {
+  const navigate = useNavigate();
+  return <HomeDashboard onNavigate={(tab) => navigate(`/dashboard/${tab}`)} />;
+}
+
+function App() {
+  return <RouterProvider router={router} />;
 }
 
 export default App;

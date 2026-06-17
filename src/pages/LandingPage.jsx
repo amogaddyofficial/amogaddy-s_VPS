@@ -1,8 +1,10 @@
 import React from 'react';
 import { Button, Card } from '../components/UI';
-import { Box, Server, Apple, ArrowRight, Check, Bot, Clock, Archive, Zap } from 'lucide-react';
+import { Box, Server, Apple, ArrowRight, Check, Bot, Clock, Archive, Zap, BookOpen } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const LandingPage = ({ onEnter }) => {
+  const navigate = useNavigate();
   const plans = [
     { name: '🍏 MAC HOME', price: '2,00€/mese', features: ['Apple Silicon Shared', 'macOS con GUI Browser', 'CPU 30%', 'SSH disattivato', '⚠️ PREVISTO IN ARRIVO'], color: 'border-purple-500/50', badge: 'In Arrivo' },
     { name: '🍏 MAC DEV', price: '3,00€/mese', features: ['Apple Silicon Shared', 'macOS Headless', 'Xcode CLI · Homebrew', 'SSH dedicato', '⚠️ PREVISTO IN ARRIVO'], color: 'border-purple-500/50', badge: 'In Arrivo' },
@@ -21,7 +23,12 @@ const LandingPage = ({ onEnter }) => {
             <Box className="text-jupiter-500" size={32} />
             <span className="text-2xl font-bold tracking-tighter">amogaddy's VPS</span>
           </div>
-          <Button onClick={onEnter} className="px-8">Inizia Gratis</Button>
+          <div className="flex items-center gap-4">
+            <button onClick={() => navigate('/docs')} className="text-gray-400 hover:text-white transition-colors text-sm flex items-center gap-2">
+              <BookOpen size={16} /> Documentazione
+            </button>
+            <Button onClick={onEnter} className="px-8">Inizia Gratis</Button>
+          </div>
         </div>
       </nav>
 
@@ -181,7 +188,7 @@ const LandingPage = ({ onEnter }) => {
           <div>
             <h4 className="font-bold mb-6 uppercase text-xs tracking-widest text-gray-500">Risorse</h4>
             <ul className="space-y-4 text-sm text-gray-400">
-              <li><a href="#" className="hover:text-jupiter-400 transition-colors">Documentazione</a></li>
+              <li><button onClick={() => navigate('/docs')} className="hover:text-jupiter-400 transition-colors">Documentazione</button></li>
               <li><a href="#" className="hover:text-jupiter-400 transition-colors">Wiki</a></li>
               <li><a href="#" className="hover:text-jupiter-400 transition-colors">Supporto</a></li>
             </ul>

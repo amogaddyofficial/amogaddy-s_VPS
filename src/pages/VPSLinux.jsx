@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Card, Button, Badge } from '../components/UI';
 import { Server, Zap, Globe, Cpu, HardDrive, Terminal, Shield, RefreshCw, X } from 'lucide-react';
+import VPSWizard from '../components/VPSWizard';
 
 const VPSLinux = () => {
   const [showProrata, setShowProrata] = useState(false);
+  const [wizardPlan, setWizardPlan] = useState(null);
 
   const plans = [
     {
@@ -76,7 +78,7 @@ const VPSLinux = () => {
             <Button
               className="w-full py-3 font-bold uppercase tracking-wider text-xs"
               variant={plan.id === 'home' ? 'primary' : 'secondary'}
-              onClick={() => plan.id === 'free' ? setShowProrata(true) : null}
+              onClick={() => setWizardPlan(plan)}
             >
               Seleziona Piano
             </Button>
@@ -115,6 +117,18 @@ const VPSLinux = () => {
           </Button>
         </div>
       </div>
+
+      {/* Wizard Creazione VPS */}
+      {wizardPlan && (
+        <VPSWizard
+          plan={wizardPlan}
+          onClose={() => setWizardPlan(null)}
+          onConfirm={(config) => {
+            console.log('VPS creata:', config);
+            setWizardPlan(null);
+          }}
+        />
+      )}
 
       {/* Popup Prorata */}
       {showProrata && (
