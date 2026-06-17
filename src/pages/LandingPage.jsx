@@ -10,8 +10,8 @@ const LandingPage = ({ onEnter }) => {
     { name: '🍏 MAC DEV', price: '3,00€/mese', features: ['Apple Silicon Shared', 'macOS Headless', 'Xcode CLI · Homebrew', 'SSH dedicato', '⚠️ PREVISTO IN ARRIVO'], color: 'border-purple-500/50', badge: 'In Arrivo' },
     { name: '👑 HOME', price: '1,50€/mese', features: ['Scaleway', 'XFCE Desktop', 'CPU 100%', 'SSH dedicato', 'Tutte le porte sbloccate', 'MySQL · PostgreSQL · Redis'], color: 'border-jupiter-500/50 jupiter-glow' },
     { name: '📦 PAAS', price: 'Wallet a consumo', features: ['Scaleway', 'Headless (No GUI)', 'CPU 100%', 'Docker · Node · Python · Go', 'Sleep mode automatico'], color: 'border-blue-500/30' },
-    { name: '⏳ FREE', price: '0,00€', features: ['Google Cloud Sandbox', 'XFCE Desktop', 'CPU 30% max', 'Uptime 24/7', 'Web RDP/VNC'], color: 'border-white/10' },
-    { name: '🚀 FREE ADVANCED', price: '0,00€', features: ['Google Cloud', 'XFCE Desktop', 'CPU 60% max', 'Max 2 ore/giorno', 'MySQL / MariaDB'], color: 'border-white/10' },
+    { name: '⏳ FREE', price: '0,00€', features: ['Google Cloud Sandbox', 'XFCE Desktop leggero', 'CPU 30% max', 'Uptime 24/7', 'Web RDP/VNC'], color: 'border-white/10' },
+    { name: '🚀 FREE ADVANCED', price: '0,00€', features: ['Google Cloud', 'XFCE Desktop leggero', 'CPU 60% max', 'Max 2 ore/giorno', 'MySQL / MariaDB'], color: 'border-white/10' },
   ];
 
   return (
