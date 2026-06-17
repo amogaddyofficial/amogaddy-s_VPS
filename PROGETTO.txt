@@ -1,0 +1,468 @@
+================================================================================
+  AMOGADDY'S VPS — DOCUMENTAZIONE COMPLETA DEL PROGETTO
+  Tema Giove | PaaS Cloud Platform
+================================================================================
+
+INDICE
+------
+1. Descrizione generale
+2. Architettura tecnica
+3. I piani e i prezzi
+4. Logiche di business
+5. Struttura del frontend
+6. Routing e navigazione
+7. Componenti principali
+8. Calcolo economics (per piano)
+9. Roadmap e stato attuale
+10. Deployment
+
+
+================================================================================
+1. DESCRIZIONE GENERALE
+================================================================================
+
+amogaddy's VPS è una piattaforma PaaS (Platform as a Service) cloud pensata
+per sviluppatori e principianti italiani. Offre 4 categorie di prodotti:
+
+  a) App & Bot Hosting — gratuito, finanziato da pubblicità
+  b) VPS Linux — da gratis a pagamento, su Google Cloud e Scaleway
+  c) VPS Mac — Apple Silicon condiviso via SSH (in arrivo)
+  d) Piano PAAS — Scaleway headless pay-per-second tramite Wallet interno
+
+Il design segue il "Tema Giove": dark mode profondo (spazio scuro #0a0a0f),
+accenti arancio/ambra (#f0a04b), effetti glassmorphism, font bold italic.
+
+Obiettivo principale: offrire il primo accesso al cloud completamente gratis,
+con monetizzazione tramite upgrade a piani a pagamento e pubblicità.
+
+
+================================================================================
+2. ARCHITETTURA TECNICA
+================================================================================
+
+FRONTEND
+  - React 19 + Vite 8
+  - Tailwind CSS 3 (palette personalizzata "Jupiter" + "Space")
+  - Framer Motion (animazioni)
+  - Lucide React (icone)
+  - React Router DOM 7 (hash routing per GitHub Pages)
+
+HOSTING FRONTEND
+  - Test/staging: GitHub Pages (gratuito)
+    URL: https://amogaddyofficial.github.io/amogaddy-s_VPS/
+    Build: GitHub Actions con Node 22 + npm ci + vite build
+  - Produzione definitiva: Vercel
+
+BACKEND (fase futura - non ancora implementato)
+  - Node.js / Express su Render
+  - Database: PostgreSQL
+  - Cronjob: reset tempo gratuito, gestione Caveau
+  - API Scaleway: creazione/gestione istanze VPS
+  - Webhook PayPal Standard per ricariche Wallet
+
+INFRASTRUTTURA VPS UTENTI
+  - Google Cloud Sandbox: piani FREE e FREE ADVANCED, App Hosting
+  - Scaleway: piani HOME, PAAS, Mac Home, Mac Dev
+
+
+================================================================================
+3. I PIANI E I PREZZI
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+🤖 APP HOSTING — 0,00 € (Sempre Gratis)
+────────────────────────────────────────────────────────────────────────────────
+Provider       : Google Cloud Sandbox
+Runtime        : Python 3.x / Node.js / Go / HTML Statico
+CPU            : 10% Shared (massimo assoluto)
+RAM            : 128–256 MB condivisa
+Disco          : 100 MB massimo
+Accesso        : Pannello Web (File Manager + Console Log)
+SSH            : Non disponibile
+Porte          : Bloccate
+Database       : Non disponibile
+DNS            : URL interno temporaneo (nessun sottodominio)
+Finanziamento  : Annunci pubblicitari (banner + video)
+
+Ciclo di vita:
+  - L'app è attiva continuamente
+  - Reset automatico ogni 24 ore alle 12:00 ora italiana
+  - Dopo 3 giorni di inattività → CAVEAU DI EMERGENZA
+    (file congelati in Git archive, riattivazione con video ad 10 secondi)
+
+Economics:
+  Prezzo utente          : 0,00 €
+  Commissione PayPal     : 0,00 €
+  Costo infrastruttura   : 0,00 € (Google Cloud Sandbox gratuito)
+  Revenue minima da Ads  : ~0,015 €/mese per utente
+    - Video Caveau 10s (1x/mese): CPM €2,00 → €0,002/view
+    - Banner 728×90 (10 imp/mese): CPM €0,50 → €0,005
+    - Banner 300×250 (10 imp/mese): CPM €0,80 → €0,008
+  Profitto netto         : ~0,015 €/mese per utente
+  Margine                : 100% (costo infra = zero)
+
+────────────────────────────────────────────────────────────────────────────────
+⏳ FREE — 0,00 € (Sempre Gratis)
+────────────────────────────────────────────────────────────────────────────────
+Provider       : Google Cloud Sandbox
+GUI            : XFCE Desktop leggero
+CPU            : 30% max (condivisa)
+RAM            : Condivisa minima per XFCE
+Uptime         : 24/7 sempre online
+Accesso        : Interfaccia Web RDP/VNC
+SSH            : IP:Porta dinamica limitata
+Porte          : Solo porte base sbloccate
+Database       : Bloccato
+OS             : Solo Linux Ubuntu (Sandbox)
+DNS            : Sottodominio DuckDNS Wildcard (*)
+File Manager   : Solo lettura / Download
+Disco          : Limitato rigido (pochi MB)
+
+Economics:
+  Prezzo utente          : 0,00 €
+  Costo infrastruttura   : 0,00 € (Google Cloud Sandbox gratuito)
+  Finanziamento          : Ads (come App Hosting)
+  Profitto netto         : ~0,015 €/mese per utente
+
+────────────────────────────────────────────────────────────────────────────────
+🚀 FREE ADVANCED — 0,00 € (Sbloccabile)
+────────────────────────────────────────────────────────────────────────────────
+Provider       : Google Cloud
+GUI            : XFCE Desktop leggero
+CPU            : 60% max (condivisa ottimizzata)
+RAM            : Condivisa ottimizzata
+Uptime         : Max 2 ore al giorno
+Accesso        : Interfaccia Web RDP/VNC
+SSH            : IP:Porta dinamica limitata
+Porte          : Porte sviluppo sbloccate
+Database       : MySQL / MariaDB
+OS             : Solo Linux Ubuntu (ottimizzato)
+DNS            : Sottodominio DuckDNS Wildcard (*)
+File Manager   : Controllo totale file
+Disco          : Spazio medio concesso
+
+Economics:
+  Prezzo utente          : 0,00 €
+  Costo infrastruttura   : 0,00 € (Google Cloud Sandbox gratuito)
+  Finanziamento          : Ads
+  Profitto netto         : ~0,015 €/mese per utente
+
+────────────────────────────────────────────────────────────────────────────────
+👑 HOME — 1,50 €/mese (Quota fissa)
+────────────────────────────────────────────────────────────────────────────────
+Provider       : Scaleway
+GUI            : XFCE Desktop (principianti)
+CPU            : 100% dedicata
+RAM            : Dedicata e garantita
+Uptime         : 24/7 sempre online
+Accesso        : Interfaccia Web RDP/VNC (Browser)
+SSH            : Stringa IP:Porta dedicata e sbloccata
+Porte          : Tutte le porte sbloccate e modificabili
+Database       : MySQL, MariaDB, PostgreSQL, Redis
+OS             : Linux Ubuntu / Windows Desktop
+DNS            : DuckDNS Wildcard (*) + Domini propri
+File Manager   : Controllo totale file
+Disco          : Spazio esteso Scaleway (~25 GB)
+Spegnimento    : Manuale da dashboard
+
+Economics:
+  Prezzo lordo utente    : 1,50 €/mese
+  Commissione PayPal     : ~0,40 € (3,4% + 0,35€)
+  Ricavo netto           : ~1,10 €
+  Costo infrastruttura   : ~0,430 € (Scaleway sempre accesa)
+  Profitto netto         : ~0,67 €/mese per utente
+  Margine                : ~44,7%
+
+────────────────────────────────────────────────────────────────────────────────
+📦 PAAS — Wallet a consumo (min. ricarica 1,50€)
+────────────────────────────────────────────────────────────────────────────────
+Provider       : Scaleway
+GUI            : Nessuna (Headless - 100% risorse ai servizi)
+CPU            : 100% dedicata
+RAM            : Dedicata e garantita
+Uptime         : Attiva finché il Wallet ha saldo positivo
+Accesso        : Terminale SSH + Chiamate HTTP API
+SSH            : Stringa IP:Porta dedicata e sbloccata
+Porte          : 100% sbloccate e modificabili
+Database       : Qualsiasi motore SQL/NoSQL (scelta libera)
+OS             : Ubuntu Server / Windows Core / Docker Engine / macOS Puro
+DNS            : DuckDNS Wildcard (*) + Domini propri
+File Manager   : Controllo totale file (scrittura/modifica)
+Disco          : Spazio esteso Scaleway S3 (flessibile)
+Spegnimento    : Automatico a saldo zero (Sleep Mode)
+Runtime        : Docker Full, Node.js, PHP, Python, Go, Java
+
+Economics (tariffa 40 ore active/mese):
+  Prezzo lordo utente    : ~1,00 € (consumo wallet)
+  Commissione PayPal     : ~0,38 €
+  Ricavo netto           : ~0,62 €
+  Costo infrastruttura   : ~0,024 € (Scaleway solo ore reali)
+  Profitto netto         : ~0,59 €/mese per utente
+  Margine                : ~59,2%
+
+────────────────────────────────────────────────────────────────────────────────
+🍏 MAC HOME — 2,00 €/mese ⚠️ PREVISTO IN ARRIVO
+────────────────────────────────────────────────────────────────────────────────
+Provider       : Scaleway (Pool condiviso Apple Silicon)
+GUI            : macOS con interfaccia grafica visiva da Browser
+CPU            : 30% max (condivisa, come piano Free)
+RAM            : Condivisa minima
+Uptime         : Quota fissa attiva solo al lancio hardware
+Accesso        : Interfaccia Desktop dal sito (Browser)
+SSH            : Disattivata (solo uso grafico/web)
+Porte          : Solo porte web base sbloccate
+Database       : Non disponibile
+OS             : macOS esclusivo (con GUI)
+DNS            : Sottodominio fisso standard
+File Manager   : Controllo totale file (interfaccia semplificata)
+Disco          : Limitato (stessi parametri del Free)
+
+Economics:
+  Prezzo lordo utente    : 2,00 €/mese
+  Commissione PayPal     : ~0,42 €
+  Ricavo netto           : ~1,58 €
+  Costo infrastruttura   : ~0,430 € (Scaleway Pool Condiviso)
+  Profitto netto         : ~1,15 €/mese per utente
+  Margine                : ~57,5%
+
+────────────────────────────────────────────────────────────────────────────────
+🍏 MAC DEV — 3,00 €/mese ⚠️ PREVISTO IN ARRIVO
+────────────────────────────────────────────────────────────────────────────────
+Provider       : Scaleway (Slot condiviso Apple Silicon)
+GUI            : Nessuna (Headless - Xcode Dev solo riga di comando)
+CPU            : 30% max (condivisa, come piano Free)
+RAM            : Condivisa minima
+Uptime         : Quota fissa attiva solo al lancio hardware
+Accesso        : Terminale SSH locale + accesso grafico dal sito
+SSH            : Stringa IP:Porta dedicata (sbloccata al lancio)
+Porte          : Porte sviluppo iOS sbloccate
+Database       : Sbloccata verso DB esterni
+OS             : macOS Puro (Hardware Apple in Pool Condiviso)
+DNS            : DuckDNS Wildcard (*) + Domini propri
+File Manager   : Controllo totale file (codice/build)
+Disco          : Limitato a pochi GB NVMe Apple
+Runtime        : Xcode CLI, Homebrew, Flutter, CocoaPods
+
+Economics:
+  Prezzo lordo utente    : 3,00 €/mese
+  Commissione PayPal     : ~0,45 €
+  Ricavo netto           : ~2,55 €
+  Costo infrastruttura   : ~0,720 € (Scaleway Slot Condiviso)
+  Profitto netto         : ~1,83 €/mese per utente
+  Margine                : ~61%
+
+
+================================================================================
+4. LOGICHE DI BUSINESS
+================================================================================
+
+POLITICA NO-REFUND
+  Il credito inserito nel Wallet non è mai rimborsabile o convertibile in
+  denaro reale. Eccezioni: guasti hardware gravi o downtime superiore a 48
+  ore consecutive. L'utente accetta esplicitamente alla registrazione.
+
+WALLET INTERNO
+  - Ricarica minima: 1,50 €
+  - Metodo: PayPal Standard (webhook)
+  - Il credito viene scalato al secondo per il piano PAAS
+  - Storico transazioni visibile nella dashboard
+
+SISTEMA PRORATA (downgrade)
+  Quando un utente effettua un downgrade di piano, il sistema calcola
+  istantaneamente il credito residuo per i giorni non utilizzati e lo
+  accredita nel Wallet interno (mai su PayPal).
+
+CAVEAU DI EMERGENZA (App Hosting)
+  Dopo 3 giorni di inattività l'app viene archiviata:
+  - Il codice viene salvato in un Git archive sicuro
+  - La pagina mostra un overlay con video sponsorizzato obbligatorio
+  - Dopo 10 secondi di video l'utente può riattivare l'app
+  - Zero costi aggiuntivi — il video finanzia il ripristino
+
+RESET GIORNALIERO APP HOSTING
+  Ogni giorno alle 12:00 ora italiana l'ambiente dell'app viene riciclato
+  e rilanciato automaticamente. I file nel File Manager rimangono intatti.
+
+LISTA D'ATTESA MAC
+  I piani Mac non sono ancora disponibili. Gli utenti possono registrare
+  la loro email per ricevere accesso prioritario. Posizione in lista
+  mostrata in tempo reale nella dashboard.
+
+VINCOLO LEGALE REGISTRAZIONE
+  L'utente non può completare la registrazione senza spuntare:
+  "Accetto i Termini di Servizio e la Politica No-Refund Rigida"
+
+
+================================================================================
+5. STRUTTURA DEL FRONTEND
+================================================================================
+
+src/
+├── App.jsx                     — Router principale (hash routing)
+├── main.jsx                    — Entry point React
+├── index.css                   — Stili globali + custom classes Tailwind
+│
+├── components/
+│   ├── Sidebar.jsx             — Navigazione laterale (desktop) + drawer (mobile)
+│   ├── UI.jsx                  — Componenti base: Button, Card, Badge
+│   └── VPSWizard.jsx           — Wizard 3-step creazione istanza VPS
+│
+└── pages/
+    ├── LandingPage.jsx         — Home pubblica con hero, App Hosting e griglia piani
+    ├── AuthPage.jsx            — Login / Registrazione con checkbox No-Refund
+    ├── DocsPage.jsx            — Documentazione pubblica (4 sezioni)
+    ├── HomeDashboard.jsx       — Dashboard giorno zero post-login
+    ├── AppHosting.jsx          — Gestione app (stati: Creazione / Attivo / Caveau)
+    ├── VPSLinux.jsx            — Matrice piani VPS + wizard creazione
+    ├── MacPlans.jsx            — Piani Mac con lista d'attesa
+    ├── WalletPage.jsx          — Saldo, ricarica, storico transazioni
+    └── Wiki.jsx                — Wiki interna della dashboard
+
+
+================================================================================
+6. ROUTING E NAVIGAZIONE
+================================================================================
+
+Usa React Router DOM v7 con createHashRouter (compatibile GitHub Pages).
+
+Rotte pubbliche (senza login):
+  /#/            → LandingPage
+  /#/docs        → DocsPage (documentazione pubblica)
+  /#/auth        → AuthPage (login/registrazione)
+
+Rotte dashboard (post-login):
+  /#/dashboard/home          → HomeDashboard
+  /#/dashboard/app-hosting   → AppHosting
+  /#/dashboard/vps           → VPSLinux
+  /#/dashboard/mac           → MacPlans
+  /#/dashboard/wallet        → WalletPage
+  /#/dashboard/wiki          → Wiki
+
+Link documentazione: accessibile dalla navbar e footer della landing.
+
+
+================================================================================
+7. COMPONENTI PRINCIPALI
+================================================================================
+
+SIDEBAR (src/components/Sidebar.jsx)
+  Desktop: colonna fissa 256px a sinistra, sticky
+  Mobile:  top bar con hamburger → drawer a comparsa da sinistra
+           Overlay scuro cliccabile per chiudere
+  Include: widget Wallet con saldo e pulsante Ricarica
+
+VPSWIZARD (src/components/VPSWizard.jsx)
+  Modale a 3 step per la creazione di una VPS:
+  Step 1 — Scelta OS (dipende dal piano selezionato)
+    FREE/FREE ADV: solo Ubuntu
+    HOME: Ubuntu, Windows Desktop
+    PAAS: Ubuntu Server, Windows Core, Docker Engine, macOS Puro
+  Step 2 — Nome istanza + slider risorse
+    Slider CPU (%): da 10% al limite del piano
+    Slider RAM (MB): da 128MB al limite del piano
+    Slider Disco (GB): da 1GB al limite del piano
+    Limiti per piano:
+      FREE:       CPU 30%,  RAM 512MB,  Disco 5GB
+      FREE ADV:   CPU 60%,  RAM 1024MB, Disco 10GB
+      HOME:       CPU 100%, RAM 4096MB, Disco 25GB
+      PAAS:       CPU 100%, RAM 8192MB, Disco 50GB
+  Step 3 — Riepilogo completo prima della conferma
+
+APPHOSTINGPAGE (src/pages/AppHosting.jsx)
+  Stato A (Creazione):
+    Selezione runtime: Python / Node.js / Go / HTML Statico
+    Nome progetto + Start Command
+  Stato B (Attivo):
+    Indicatori CPU, RAM, Disco (mock)
+    Banner pubblicitari (728×90 + 300×250)
+    File Manager con upload e creazione cartelle (mock client-side)
+  Stato C (Caveau):
+    Overlay nero su tutta la pagina
+    Player video simulato con countdown 10 secondi
+    Testo copywriting onesto sul funzionamento del servizio
+
+DOCSPAGE (src/pages/DocsPage.jsx)
+  Sezioni collassabili (accordion):
+  1. Panoramica Piani — card per tutti e 7 i piani
+  2. Guide di Setup — Bot Discord/Telegram, VPS Linux, Piani Mac
+  3. FAQ — 8 domande frequenti con risposte dettagliate
+  4. Termini di Servizio & Politica No-Refund
+
+
+================================================================================
+8. CALCOLO ECONOMICS (RIEPILOGO)
+================================================================================
+
+Piano              Prezzo    Commissione   Ricavo   Costo Infra   Profitto   Margine
+─────────────────────────────────────────────────────────────────────────────────────
+🤖 App Hosting     0,00 €    0,00 €        0,015€   0,00 €        0,015 €    100%
+⏳ FREE            0,00 €    0,00 €        0,015€   0,00 €        0,015 €    100%
+🚀 FREE ADVANCED   0,00 €    0,00 €        0,015€   0,00 €        0,015 €    100%
+👑 HOME            1,50 €    0,40 €        1,10 €   0,430 €       0,67 €     44,7%
+📦 PAAS (~40h)     1,00 €    0,38 €        0,62 €   0,024 €       0,59 €     59,2%
+🍏 MAC HOME        2,00 €    0,42 €        1,58 €   0,430 €       1,15 €     57,5%
+🍏 MAC DEV         3,00 €    0,45 €        2,55 €   0,720 €       1,83 €     61,0%
+
+Note:
+- Commissione PayPal Standard: 3,4% + 0,35€ per transazione
+- Costo Scaleway basato su nodi DEV1-S (calcolo effettivo al secondo)
+- App Hosting revenue minima: video Caveau 1x/mese + banner 10 imp/mese
+
+
+================================================================================
+9. ROADMAP E STATO ATTUALE
+================================================================================
+
+MESE 1 — In corso
+  [✓] Frontend estetico completo (Tema Giove)
+  [✓] Tutte le pagine pubbliche e dashboard (solo estetica)
+  [✓] Wizard creazione VPS con slider
+  [✓] Documentazione pubblica
+  [✓] Deploy su GitHub Pages
+  [✓] Routing separato per pagina
+  [✓] Responsive mobile (sidebar a comparsa)
+  [ ] Backend Node.js/Express su Render
+  [ ] Integrazione API Scaleway
+  [ ] Sistema autenticazione reale
+  [ ] Wallet + webhook PayPal
+  [ ] Cronjob reset App Hosting 12:00 IT
+  [ ] Cronjob Caveau (3 giorni inattività)
+  [ ] Deploy definitivo su Vercel
+
+FASI FUTURE
+  [ ] Piani Mac (lancio hardware Apple Silicon)
+  [ ] Sistema annunci pubblicitari (AdSense o rete propria)
+  [ ] Pannello admin per gestione utenti
+  [ ] API pubblica per sviluppatori
+  [ ] App mobile (iOS/Android)
+
+
+================================================================================
+10. DEPLOYMENT
+================================================================================
+
+GITHUB PAGES (staging/test)
+  Repository : https://github.com/amogaddyofficial/amogaddy-s_VPS
+  URL live   : https://amogaddyofficial.github.io/amogaddy-s_VPS/
+  Build      : GitHub Actions (.github/workflows/jekyll-gh-pages.yml)
+               Node 22 → npm ci → vite build → deploy dist/
+  Config     : vite.config.js → base: '/amogaddy-s_VPS/'
+  IMPORTANTE : In Settings → Pages → Source deve essere "GitHub Actions"
+
+VERCEL (produzione futura)
+  Config     : vite.config.js → base: '/'
+  Deploy     : Push su branch main → auto-deploy Vercel
+  Dominio    : Da configurare con dominio personalizzato
+
+VARIABILI D'AMBIENTE (future, backend)
+  SCALEWAY_ACCESS_KEY    — Chiave API Scaleway
+  SCALEWAY_SECRET_KEY    — Secret API Scaleway
+  PAYPAL_CLIENT_ID       — Client ID PayPal
+  PAYPAL_SECRET          — Secret PayPal
+  DATABASE_URL           — Stringa connessione PostgreSQL
+  JWT_SECRET             — Segreto per token autenticazione
+
+
+================================================================================
+  Fine documento — amogaddy's VPS & Tema Giove
+================================================================================
