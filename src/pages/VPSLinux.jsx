@@ -10,33 +10,37 @@ const VPSLinux = () => {
       id: 'free',
       name: '⏳ FREE',
       price: '0,00€',
-      provider: 'Google Cloud',
-      features: ['Grafica XFCE', 'CPU 30% Shared', '500MB RAM', 'Uptime 24/7'],
+      subtitle: 'Sempre Gratis',
+      provider: 'Google Cloud Sandbox',
+      features: ['XFCE Desktop leggero', 'CPU 30% max', 'RAM condivisa minima', 'Uptime 24/7', 'Web RDP/VNC', 'Porte base sbloccate', 'DuckDNS Wildcard', 'Linux Ubuntu'],
       color: 'border-white/10'
     },
     {
       id: 'free-adv',
       name: '🚀 FREE ADVANCED',
       price: '0,00€',
-      provider: 'Scaleway',
-      features: ['Grafica XFCE', 'CPU 60% Dedicated', '10GB Storage', 'Max 2 ore al giorno'],
+      subtitle: 'Sbloccabile',
+      provider: 'Google Cloud',
+      features: ['XFCE Desktop leggero', 'CPU 60% max', 'RAM condivisa ottimizzata', 'Max 2 ore al giorno', 'Web RDP/VNC', 'Porte sviluppo sbloccate', 'MySQL / MariaDB', 'Linux Ubuntu'],
       color: 'border-jupiter-500/30'
     },
     {
       id: 'home',
       name: '👑 HOME',
       price: '1,50€/mese',
+      subtitle: 'Quota fissa mensile',
       provider: 'Scaleway',
-      features: ['Grafica XFCE', 'CPU 100%', '25GB NVMe', 'Tutte le porte sbloccate', 'SSH Web'],
+      features: ['XFCE Desktop', 'CPU 100% dedicata', 'RAM dedicata e garantita', 'Uptime 24/7', 'SSH IP:Porta dedicato', 'Tutte le porte sbloccate', 'MySQL · MariaDB · PostgreSQL · Redis', 'Ubuntu / Windows Desktop', 'DuckDNS + Domini propri'],
       color: 'border-jupiter-500 jupiter-glow'
     },
     {
       id: 'paas',
       name: '📦 PAAS',
-      price: 'A consumo',
-      provider: 'Scaleway / Docker',
-      features: ['Headless (No GUI)', 'Docker Ready', 'Sleep Mode automatico', 'Pagamento al secondo'],
-      color: 'border-purple-500/30'
+      price: 'Wallet a consumo',
+      subtitle: 'Ricarica minima PayPal 1€',
+      provider: 'Scaleway',
+      features: ['Headless (No GUI)', '⚡ CPU 100% dedicata', 'RAM dedicata e garantita', 'Attivo finché wallet positivo', 'SSH IP:Porta dedicato', '100% porte sbloccate', 'Qualsiasi SQL/NoSQL', 'Docker · Ubuntu · Windows · macOS', 'DuckDNS + Domini propri', 'Sleep Mode automatico a saldo zero'],
+      color: 'border-blue-500/30'
     }
   ];
 
@@ -55,7 +59,8 @@ const VPSLinux = () => {
           <Card key={plan.id} className={`p-6 flex flex-col justify-between transition-all hover:scale-[1.02] border-2 ${plan.color}`}>
             <div>
               <div className="text-xs font-bold text-jupiter-500 mb-2 uppercase tracking-[0.2em]">{plan.provider}</div>
-              <h2 className="text-xl font-bold mb-4 italic">{plan.name}</h2>
+              <h2 className="text-xl font-bold mb-1 italic">{plan.name}</h2>
+              <div className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-3">{plan.subtitle}</div>
               <div className="text-2xl font-black mb-6">{plan.price}</div>
 
               <ul className="space-y-3 mb-8">

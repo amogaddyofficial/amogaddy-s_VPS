@@ -4,12 +4,12 @@ import { Box, Server, Apple, ArrowRight, Check } from 'lucide-react';
 
 const LandingPage = ({ onEnter }) => {
   const plans = [
-    { name: 'App Hosting', price: 'Gratis', features: ['Python/Node/Go', 'Shared CPU', 'File Manager', 'Ads Supported'], color: 'border-white/10' },
-    { name: 'Linux Free', price: '€0', features: ['Google Cloud', 'XFCE Desktop', 'CPU 30%', 'Uptime 24/7'], color: 'border-white/10' },
-    { name: 'Free Adv', price: '€0', features: ['Scaleway', 'XFCE Desktop', 'CPU 60%', 'Max 2h/giorno'], color: 'border-white/10' },
-    { name: 'Linux Home', price: '€1.50/m', features: ['Scaleway', 'Root Access', '25GB NVMe', 'No Limits'], color: 'border-jupiter-500/50 jupiter-glow' },
-    { name: 'Mac Home', price: '€2.00/m', features: ['Apple Silicon', 'SSH Access', 'Dev Tools', 'Coming Soon'], color: 'border-purple-500/20' },
-    { name: 'Mac Dev', price: '€3.00/m', features: ['Apple Silicon', 'Root Access', 'Extra RAM', 'Coming Soon'], color: 'border-purple-500/20' },
+    { name: '⏳ FREE', price: '0,00€', features: ['Google Cloud Sandbox', 'XFCE Desktop', 'CPU 30% max', 'Uptime 24/7', 'Web RDP/VNC'], color: 'border-white/10' },
+    { name: '🚀 FREE ADVANCED', price: '0,00€', features: ['Google Cloud', 'XFCE Desktop', 'CPU 60% max', 'Max 2 ore/giorno', 'MySQL / MariaDB'], color: 'border-white/10' },
+    { name: '👑 HOME', price: '1,50€/mese', features: ['Scaleway', 'XFCE Desktop', 'CPU 100%', 'SSH dedicato', 'Tutte le porte sbloccate', 'MySQL · PostgreSQL · Redis'], color: 'border-jupiter-500/50 jupiter-glow' },
+    { name: '📦 PAAS', price: 'Wallet a consumo', features: ['Scaleway', 'Headless (No GUI)', 'CPU 100%', 'Docker · Node · Python · Go', 'Sleep mode automatico'], color: 'border-blue-500/30' },
+    { name: '🍏 MAC HOME', price: '2,00€/mese', features: ['Apple Silicon Shared', 'macOS con GUI Browser', 'CPU 30%', 'SSH disattivato', '⚠️ PREVISTO IN ARRIVO'], color: 'border-purple-500/20' },
+    { name: '🍏 MAC DEV', price: '3,00€/mese', features: ['Apple Silicon Shared', 'macOS Headless', 'Xcode CLI · Homebrew', 'SSH dedicato', '⚠️ PREVISTO IN ARRIVO'], color: 'border-purple-500/20' },
   ];
 
   return (

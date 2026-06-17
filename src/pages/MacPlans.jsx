@@ -19,14 +19,14 @@ const MacPlans = () => {
           {
             name: '🍏 Mac Home',
             price: '2,00€/mese',
-            desc: 'Pool condiviso per test app iOS e sviluppo leggero.',
-            features: ['M2 Chip Shared', '8GB RAM Shared', 'macOS Sonoma', 'SSH Access']
+            desc: 'Pool condiviso con interfaccia macOS visiva e guidata dal browser.',
+            features: ['Apple Silicon Shared', 'macOS con GUI (Browser)', 'CPU 30% max', 'RAM condivisa minima', 'Porte web base sbloccate', 'SSH disattivato', 'Spazio limitato (come Free)', 'Quota fissa attiva solo al lancio']
           },
           {
             name: '🍏 Mac Dev',
             price: '3,00€/mese',
-            desc: 'Risorse dedicate per build pesanti e Xcode server.',
-            features: ['M2/M3 Dedicated', '16GB RAM', 'Full Root Access', 'VNC Desktop']
+            desc: 'Accesso SSH e grafico per build Xcode e sviluppo nativo Apple.',
+            features: ['Apple Silicon Shared', 'macOS Headless (CLI)', 'CPU 30% max', 'RAM condivisa minima', 'SSH IP:Porta dedicato', 'Porte sviluppo iOS sbloccate', 'Xcode CLI · Homebrew · Flutter · CocoaPods', 'Quota fissa attiva solo al lancio hardware']
           }
         ].map((plan, i) => (
           <Card key={i} className="p-8 border border-white/5 opacity-50 relative overflow-hidden group grayscale hover:grayscale-0 transition-all duration-700">
