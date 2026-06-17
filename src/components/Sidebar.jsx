@@ -27,7 +27,7 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout, walletBalance = "0,00" }) 
         <div className="w-10 h-10 jupiter-gradient rounded-xl flex items-center justify-center jupiter-glow shrink-0">
           <Box className="text-white" size={24} />
         </div>
-        <span className="text-xl font-bold tracking-tight">CloudBox</span>
+        <span className="text-xl font-bold tracking-tight">amogaddy's VPS</span>
       </div>
 
       <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">

@@ -20,7 +20,7 @@ const AuthPage = ({ onLogin, onBack }) => {
           <div className="w-20 h-20 jupiter-gradient rounded-3xl flex items-center justify-center jupiter-glow mx-auto mb-6 shadow-2xl">
             <Box className="text-white" size={40} />
           </div>
-          <h1 className="text-4xl font-bold tracking-tight">CloudBox</h1>
+          <h1 className="text-4xl font-bold tracking-tight">amogaddy's VPS</h1>
           <p className="text-gray-400 mt-2">La tua console Tema Giove ti aspetta.</p>
         </div>
 

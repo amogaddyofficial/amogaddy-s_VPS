@@ -45,7 +45,7 @@ const Wiki = () => {
       <div className="flex-1 space-y-8">
         <header>
           <h1 className="text-4xl font-bold tracking-tight italic mb-4">Documentazione & Wiki</h1>
-          <p className="text-gray-400 text-lg">Tutto quello che devi sapere per dominare la nuvola CloudBox.</p>
+          <p className="text-gray-400 text-lg">Tutto quello che devi sapere per dominare la nuvola amogaddy's VPS.</p>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

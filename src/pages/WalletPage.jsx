@@ -7,7 +7,7 @@ const WalletPage = () => {
     <div className="space-y-12 py-6">
       <header>
         <h1 className="text-3xl font-bold tracking-tight italic mb-2">Portafoglio & Wallet</h1>
-        <p className="text-gray-400">Gestisci i tuoi crediti prepagati per le risorse CloudBox.</p>
+        <p className="text-gray-400">Gestisci i tuoi crediti prepagati per le risorse amogaddy's VPS.</p>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -77,7 +77,7 @@ const WalletPage = () => {
             <h4 className="text-lg font-bold text-red-400 italic">Politica No-Refund Rigida</h4>
             <p className="text-sm text-gray-500 leading-relaxed max-w-4xl">
               Il credito inserito nel Wallet non è mai rimborsabile o convertibile in denaro reale, salvo guasti hardware gravi o downtime dell'infrastruttura superiore alle 48 ore consecutive.
-              CloudBox PaaS opera come un servizio prepagato; caricando fondi dichiari di accettare espressamente queste condizioni.
+              amogaddy's VPS opera come un servizio prepagato; caricando fondi dichiari di accettare espressamente queste condizioni.
             </p>
          </div>
       </div>

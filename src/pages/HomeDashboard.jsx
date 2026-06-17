@@ -7,7 +7,7 @@ const HomeDashboard = ({ onNavigate }) => {
     <div className="space-y-12 py-6">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight mb-2">Benvenuto su CloudBox PaaS</h1>
+          <h1 className="text-4xl font-bold tracking-tight mb-2">Benvenuto su amogaddy's VPS</h1>
           <p className="text-gray-400 text-lg">Da dove vogliamo iniziare oggi?</p>
         </div>
         <div className="bg-jupiter-500/10 border border-jupiter-500/20 px-4 py-2 rounded-full flex items-center gap-2">

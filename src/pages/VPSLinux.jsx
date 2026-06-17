@@ -80,7 +80,7 @@ const VPSLinux = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
-        <Card title="Perché scegliere CloudBox?" className="bg-white/2">
+        <Card title="Perché scegliere amogaddy's VPS?" className="bg-white/2">
            <div className="space-y-6">
               {[
                 { icon: Shield, title: "Isolamento Totale", desc: "Ogni VPS gira in una sandbox hardware isolata (KVM/Docker)." },

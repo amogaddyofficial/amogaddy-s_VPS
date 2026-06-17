@@ -19,7 +19,7 @@ const LandingPage = ({ onEnter }) => {
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Box className="text-jupiter-500" size={32} />
-            <span className="text-2xl font-bold tracking-tighter">CloudBox</span>
+            <span className="text-2xl font-bold tracking-tighter">amogaddy's VPS</span>
           </div>
           <Button onClick={onEnter} className="px-8">Inizia Gratis</Button>
         </div>
@@ -78,9 +78,9 @@ const LandingPage = ({ onEnter }) => {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Box className="text-jupiter-500" size={24} />
-              <span className="text-xl font-bold tracking-tighter">CloudBox</span>
+              <span className="text-xl font-bold tracking-tighter">amogaddy's VPS</span>
             </div>
-            <p className="text-sm text-gray-500">CloudBox PaaS & Tema Giove. © 2024</p>
+            <p className="text-sm text-gray-500">amogaddy's VPS & Tema Giove. © 2024</p>
           </div>
           <div>
             <h4 className="font-bold mb-6 uppercase text-xs tracking-widest text-gray-500">Legale</h4>
