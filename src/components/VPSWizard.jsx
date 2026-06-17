@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Badge } from './UI';
-import { X, Server, Monitor, Terminal, Container, Apple, ChevronRight, Cpu, MemoryStick, HardDrive, Check } from 'lucide-react';
+import { X, Server, Monitor, Terminal, Container, Apple, ChevronRight, Cpu, Database, HardDrive, Check } from 'lucide-react';
 
 const OS_OPTIONS = {
   free: [
@@ -156,7 +156,7 @@ const VPSWizard = ({ plan, onClose, onConfirm }) => {
               <Slider label="CPU" icon={Cpu} value={cpu} min={10} max={limits.cpu} step={5} unit="%" onChange={setCpu} />
               <Slider
                 label="RAM"
-                icon={MemoryStick}
+                icon={Database}
                 value={ram}
                 min={128}
                 max={limits.ram}

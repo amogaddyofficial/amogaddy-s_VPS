@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { createHashRouter, RouterProvider, Navigate, useNavigate, Outlet } from 'react-router-dom';
+import React from 'react';
+import { createHashRouter, RouterProvider, Navigate, useNavigate, useLocation, Outlet } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import HomeDashboard from './pages/HomeDashboard';
 import AppHosting from './pages/AppHosting';
@@ -14,10 +14,10 @@ import DocsPage from './pages/DocsPage';
 // Dashboard layout con sidebar
 const DashboardLayout = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('home');
+  const location = useLocation();
+  const activeTab = location.pathname.split('/dashboard/')[1] || 'home';
 
   const handleTabChange = (tab) => {
-    setActiveTab(tab);
     navigate(`/dashboard/${tab}`);
   };
 

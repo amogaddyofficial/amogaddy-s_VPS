@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from '../components/UI';
+import { Card, Button } from '../components/UI';
 import { Book, ChevronRight, Search, Zap, Key, FileCode, Wallet } from 'lucide-react';
 
 const Wiki = () => {
