@@ -33,13 +33,13 @@ const LandingPage = ({ onEnter }) => {
       </nav>
 
       {/* Hero Section */}
-      <header className="max-w-7xl mx-auto px-6 pt-24 pb-32 text-center relative overflow-hidden">
+      <header className="max-w-7xl mx-auto px-4 md:px-6 pt-16 md:pt-24 pb-16 md:pb-32 text-center relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-jupiter-500/10 blur-[120px] rounded-full -z-10"></div>
-        <h1 className="text-6xl md:text-7xl font-bold tracking-tight mb-8">
-          L'ecosistema Cloud definitivo per <br />
+        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 md:mb-8">
+          L'ecosistema Cloud definitivo per <br className="hidden sm:block" />
           <span className="text-jupiter-500">Sviluppatori e Principianti</span>
         </h1>
-        <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-12">
+        <p className="text-base md:text-xl text-gray-400 max-w-3xl mx-auto mb-8 md:mb-12">
           Ospita qualsiasi applicazione gratis o lancia VPS dedicate a consumo senza costi fissi.
           Potenza pura, semplicità assoluta.
         </p>
