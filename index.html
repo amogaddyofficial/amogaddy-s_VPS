@@ -1,13 +1,428 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>amogaddy's VPS</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="./src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>amogaddy's VPS - Terminal Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        jupiter: {
+                            orange: '#f0a04b',
+                            dark: '#0a0a0f',
+                        },
+                        space: {
+                            950: '#030712',
+                            900: '#111827',
+                            800: '#1f2937',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #030712; /* space-950 */
+        }
+
+        .hacker-text-green { color: #22c55e; }
+        .hacker-text-blue { color: #3b82f6; }
+
+        .glass-card {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(240, 160, 75, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .terminal-glow {
+            box-shadow: inset 0 0 10px rgba(34, 197, 94, 0.1);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #030712;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 1.2em;
+            background-color: #22c55e;
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="text-gray-300 min-h-screen overflow-x-hidden">
+    <!-- Main Content Container -->
+    <div id="app" class="flex flex-col md:flex-row h-screen p-2 md:p-4 gap-4">
+
+        <!-- COLONNA SINISTRA: PIANI COMMERCIALI -->
+        <div class="w-full md:w-5/12 flex flex-col gap-4 overflow-y-auto pr-2">
+            <header class="mb-4">
+                <h1 class="text-2xl font-bold text-jupiter-orange italic tracking-tighter uppercase">amogaddy's VPS</h1>
+                <p class="text-xs text-gray-500">Cloud Platform — Tema Giove v2.0</p>
+            </header>
+
+            <!-- PIANO GRATUITO -->
+            <div class="glass-card p-6 rounded-xl border-l-4 border-l-green-500 relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-green-500 text-black px-3 py-1 text-[10px] font-bold uppercase">Free</div>
+                <h2 class="text-xl font-bold text-white mb-2">🆓 Piano Gratuito</h2>
+                <p class="text-sm text-gray-400 mb-4">Sostenuto da annunci. Ideale per piccoli bot e test.</p>
+
+                <ul class="space-y-2 text-xs mb-6">
+                    <li class="flex items-center gap-2"><span class="text-green-500">✔</span> CPU Shared (10% max)</li>
+                    <li class="flex items-center gap-2"><span class="text-green-500">✔</span> RAM 128-256 MB</li>
+                    <li class="flex items-center gap-2"><span class="text-green-500">✔</span> Reset Giornaliero (12:00)</li>
+                    <li class="flex items-center gap-2"><span class="text-green-500">✔</span> Rotazione Settimanale (Domenica)</li>
+                    <li class="flex items-center gap-1 text-jupiter-orange mt-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                        Caveau: Congelamento dopo 3gg inattività
+                    </li>
+                </ul>
+
+                <button onclick="handleCreateFree()" class="w-full py-3 bg-green-600 hover:bg-green-500 text-black font-bold rounded-lg transition-all active:scale-95 uppercase text-sm tracking-widest">
+                    Avvia Istanza Gratis
+                </button>
+            </div>
+
+            <!-- PIANO PAAS -->
+            <div class="glass-card p-6 rounded-xl border-l-4 border-l-jupiter-orange relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-jupiter-orange text-black px-3 py-1 text-[10px] font-bold uppercase">Enterprise</div>
+                <h2 class="text-xl font-bold text-white mb-2">🚀 PaaS Enterprise</h2>
+                <p class="text-sm text-gray-400 mb-4">Potenza pura senza compromessi. Paga solo quello che usi.</p>
+
+                <ul class="space-y-2 text-xs mb-6">
+                    <li class="flex items-center gap-2"><span class="text-jupiter-orange">✔</span> CPU Dedicata 100%</li>
+                    <li class="flex items-center gap-2"><span class="text-jupiter-orange">✔</span> Supporto Docker Completo</li>
+                    <li class="flex items-center gap-2"><span class="text-jupiter-orange">✔</span> Istanza FISSA (No rotazione)</li>
+                    <li class="flex items-center gap-2"><span class="text-jupiter-orange">✔</span> Ricarica via PayPal</li>
+                    <li class="flex items-center gap-1 text-blue-400 mt-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Sleep Mode intelligente a saldo zero
+                    </li>
+                </ul>
+
+                <button onclick="handleRecharge()" class="w-full py-3 bg-jupiter-orange hover:bg-orange-400 text-black font-bold rounded-lg transition-all active:scale-95 uppercase text-sm tracking-widest">
+                    Ricarica Wallet PayPal
+                </button>
+            </div>
+
+            <footer class="mt-auto pt-4 text-[10px] text-gray-600">
+                &copy; 2024 amogaddy VPS — Proudly Hosted on GitHub Pages. No backend, 100% Client-Side Logic.
+            </footer>
+        </div>
+
+        <!-- COLONNA DESTRA: TERMINALE -->
+        <div class="w-full md:w-7/12 flex flex-col glass-card rounded-xl border-gray-800 overflow-hidden terminal-glow">
+            <!-- Terminal Header / Wallet Monitor -->
+            <div class="bg-gray-900 px-4 py-2 flex justify-between items-center border-b border-gray-800">
+                <div class="flex gap-2">
+                    <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+                </div>
+                <div class="text-xs font-bold flex items-center gap-4">
+                    <span class="text-gray-500 uppercase tracking-widest">System Monitor</span>
+                    <div class="bg-black px-3 py-1 rounded border border-jupiter-orange/30">
+                        <span class="text-gray-400">WALLET:</span>
+                        <span id="wallet-display" class="text-jupiter-orange ml-1">0,00 €</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terminal Output -->
+            <div id="terminal-output" class="flex-1 p-4 overflow-y-auto text-sm space-y-1 font-mono">
+                <div class="text-green-500 mb-2">amogaddyOS v1.0.0 (tty1) - Collegamento stabilito...</div>
+                <div class="text-gray-500 italic">Digitare 'help' per la lista dei comandi.</div>
+            </div>
+
+            <!-- Terminal Input -->
+            <div class="p-4 bg-black/40 border-t border-gray-800 flex items-center gap-2">
+                <span class="text-green-500 font-bold">visitor@amogaddy:~$</span>
+                <input type="text" id="terminal-input"
+                    class="flex-1 bg-transparent border-none outline-none text-green-400 font-mono"
+                    placeholder="..."
+                    autofocus
+                    autocomplete="off">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * amogaddyOS - Logica di simulazione Client-Side
+         * Questa applicazione simula un pannello di controllo VPS senza backend reale.
+         * Utilizza il LocalStorage per la persistenza dei dati.
+         */
+
+        // --- CONFIGURAZIONE E STATO ---
+        let state = {
+            wallet: 0.0,
+            instances: [], // Ogni istanza: { id, name, type, node, status, createdAt, lastActivity }
+            lastCommandAt: Date.now()
+        };
+
+        const TERMINAL_OUTPUT = document.getElementById('terminal-output');
+        const TERMINAL_INPUT = document.getElementById('terminal-input');
+        const WALLET_DISPLAY = document.getElementById('wallet-display');
+
+        const NODES_FREE = ['free-node-gcp-1', 'free-node-gcp-2', 'free-node-gcp-3'];
+        const NODES_PAAS = ['enterprise-node-sw-1', 'enterprise-node-sw-2'];
+
+        // --- UTILS ---
+        function formatEuro(val) {
+            return val.toLocaleString('it-IT', { style: 'currency', currency: 'EUR' });
+        }
+
+        function updateUI() {
+            WALLET_DISPLAY.innerText = formatEuro(state.wallet);
+            saveState();
+        }
+
+        function print(text, type = 'default') {
+            const div = document.createElement('div');
+            switch(type) {
+                case 'error': div.className = 'text-red-500'; break;
+                case 'success': div.className = 'text-green-500'; break;
+                case 'info': div.className = 'text-blue-400'; break;
+                case 'warning': div.className = 'text-jupiter-orange'; break;
+                case 'command': div.className = 'text-gray-400 mt-2'; break;
+                default: div.className = 'text-gray-300';
+            }
+            div.innerText = text;
+            TERMINAL_OUTPUT.appendChild(div);
+            TERMINAL_OUTPUT.scrollTop = TERMINAL_OUTPUT.scrollHeight;
+        }
+
+        // --- COMANDI ---
+        const commands = {
+            'help': () => {
+                print("Comandi disponibili:", 'info');
+                print("  help           - Mostra questo messaggio");
+                print("  status         - Mostra lo stato delle tue istanze e del wallet");
+                print("  create-free    - Crea una nuova micro-app gratuita");
+                print("  create-paas    - Crea un'istanza Enterprise (richiede saldo)");
+                print("  balance-cron   - Simula il cronjob domenicale (rotazione nodi)");
+                print("  reset-12       - Simula il reset delle 12:00 e controllo Caveau");
+                print("  recharge       - Simula ricarica PayPal (+5,00€)");
+                print("  clear          - Pulisce lo schermo");
+            },
+
+            'clear': () => {
+                TERMINAL_OUTPUT.innerHTML = '';
+            },
+
+            'status': () => {
+                print("--- SYSTEM STATUS ---", 'info');
+                print(`Wallet: ${formatEuro(state.wallet)}`);
+                if (state.instances.length === 0) {
+                    print("Nessuna istanza attiva.");
+                } else {
+                    state.instances.forEach(ins => {
+                        const color = ins.type === 'FREE' ? 'text-green-400' : 'text-jupiter-orange';
+                        print(`[${ins.type}] ${ins.name} | Stato: ${ins.status} | Nodo: ${ins.node}`, 'default');
+                    });
+                }
+            },
+
+            'create-free': (args) => {
+                const name = args[0] || `app-${Math.floor(Math.random() * 1000)}`;
+                const node = NODES_FREE[Math.floor(Math.random() * NODES_FREE.length)];
+
+                const newIns = {
+                    id: Date.now(),
+                    name: name,
+                    type: 'FREE',
+                    node: node,
+                    status: 'RUNNING',
+                    createdAt: Date.now(),
+                    lastActivity: Date.now()
+                };
+
+                state.instances.push(newIns);
+                print(`Istanza gratuita '${name}' creata con successo su ${node}.`, 'success');
+                updateUI();
+            },
+
+            'create-paas': (args) => {
+                if (state.wallet <= 0) {
+                    print("Errore: Saldo insufficiente per attivare il piano PaaS.", 'error');
+                    return;
+                }
+                const name = args[0] || `srv-${Math.floor(Math.random() * 1000)}`;
+                const node = NODES_PAAS[Math.floor(Math.random() * NODES_PAAS.length)];
+
+                const newIns = {
+                    id: Date.now(),
+                    name: name,
+                    type: 'PAAS',
+                    node: node,
+                    status: 'RUNNING',
+                    createdAt: Date.now(),
+                    lastActivity: Date.now()
+                };
+
+                state.instances.push(newIns);
+                print(`Istanza PaaS '${name}' inizializzata su nodo dedicato ${node}.`, 'success');
+                print(`Consumo energetico avviato: -0.01€ ogni 10s.`, 'warning');
+                updateUI();
+            },
+
+            'recharge': () => {
+                state.wallet += 5.0;
+                print("Ricarica di 5,00€ completata tramite PayPal (Simulazione).", 'success');
+                // Se c'erano istanze in sleep, le riattiviamo?
+                state.instances.forEach(ins => {
+                    if (ins.type === 'PAAS' && ins.status === 'SLEEP') {
+                        ins.status = 'RUNNING';
+                        print(`Istanza ${ins.name} riattivata automaticamente.`, 'info');
+                    }
+                });
+                updateUI();
+            },
+
+            'balance-cron': () => {
+                print("Avvio bilanciamento del carico domenicale (Ore 03:00)...", 'warning');
+                let movedCount = 0;
+                state.instances.forEach(ins => {
+                    if (ins.type === 'FREE') {
+                        const oldNode = ins.node;
+                        let newNode;
+                        do {
+                            newNode = NODES_FREE[Math.floor(Math.random() * NODES_FREE.length)];
+                        } while (newNode === oldNode && NODES_FREE.length > 1);
+
+                        ins.node = newNode;
+                        print(`Migrazione: ${ins.name} spostata da ${oldNode} a ${newNode}.`, 'default');
+                        movedCount++;
+                    }
+                });
+                if (movedCount === 0) print("Nessuna istanza gratuita da bilanciare.");
+                print("Operazione completata. Istanze PaaS non toccate (come da contratto).", 'success');
+                updateUI();
+            },
+
+            'reset-12': () => {
+                print("Esecuzione reset giornaliero delle 12:00...", 'info');
+                const now = Date.now();
+                const threeDaysMs = 3 * 24 * 60 * 60 * 1000;
+
+                state.instances = state.instances.filter(ins => {
+                    if (ins.type === 'FREE') {
+                        // Check Caveau logic
+                        if (now - ins.lastActivity > threeDaysMs) {
+                            print(`CAVEAU: Istanza ${ins.name} inattiva da 3 giorni. Spostata su Git Archive.`, 'error');
+                            return false; // Rimuoviamo dall'elenco attivo (simula freeze)
+                        }
+                        print(`Riavvio istanza gratis: ${ins.name}... OK`, 'default');
+                    }
+                    return true;
+                });
+                print("Pulizia cache e log completata.", 'success');
+                updateUI();
+            }
+        };
+
+        // --- HANDLERS ---
+        function executeCommand(input) {
+            const parts = input.trim().split(/\s+/);
+            const cmd = parts[0].toLowerCase();
+            const args = parts.slice(1);
+
+            state.lastCommandAt = Date.now();
+            // Aggiorna lastActivity per tutte le istanze per semplicità di demo
+            state.instances.forEach(ins => ins.lastActivity = Date.now());
+
+            print(`visitor@amogaddy:~$ ${input}`, 'command');
+
+            if (commands[cmd]) {
+                commands[cmd](args);
+            } else if (cmd !== '') {
+                print(`Comando non riconosciuto: ${cmd}`, 'error');
+            }
+        }
+
+        TERMINAL_INPUT.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const val = TERMINAL_INPUT.value;
+                executeCommand(val);
+                TERMINAL_INPUT.value = '';
+            }
+        });
+
+        // Interfaccia pulsanti esterni
+        function handleCreateFree() {
+            executeCommand('create-free');
+        }
+
+        function handleRecharge() {
+            executeCommand('recharge');
+        }
+
+        // --- PERSISTENZA ---
+        function saveState() {
+            localStorage.setItem('amogaddy_vps_state', JSON.stringify(state));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('amogaddy_vps_state');
+            if (saved) {
+                try {
+                    state = JSON.parse(saved);
+                    updateUI();
+                    print("Sessione ripristinata dal database locale.", 'info');
+                } catch (e) {
+                    console.error("Errore caricamento stato", e);
+                }
+            }
+        }
+
+        // --- LOOP DI BACKGROUND ---
+        setInterval(() => {
+            let activePaaS = state.instances.filter(ins => ins.type === 'PAAS' && ins.status === 'RUNNING');
+
+            if (activePaaS.length > 0) {
+                const cost = 0.01 * activePaaS.length;
+                if (state.wallet >= cost) {
+                    state.wallet -= cost;
+                    // Opzionale: print(`Consumo PaaS: -${cost.toFixed(2)}€`, 'default');
+                } else {
+                    state.wallet = 0;
+                    activePaaS.forEach(ins => {
+                        ins.status = 'SLEEP';
+                        print(`ATTENZIONE: Credito esaurito. Istanza ${ins.name} mandata in SLEEP MODE.`, 'error');
+                    });
+                }
+                updateUI();
+            }
+        }, 10000); // Ogni 10 secondi
+
+        // Avvio
+        loadState();
+    </script>
+</body>
 </html>
