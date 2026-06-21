@@ -25,9 +25,7 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout, walletBalance = "0,00" }) 
     <>
       <div className="p-5 flex items-center justify-between gap-3 border-b border-white/5">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 jupiter-gradient rounded-xl flex items-center justify-center jupiter-glow shrink-0">
-            <Box className="text-white" size={20} />
-          </div>
+          <img src="/amogaddy-s_VPS/logo.png" alt="logo" className="w-9 h-9 rounded-xl shrink-0 object-cover" />
           <span className="text-lg font-bold tracking-tight">amogaddy's VPS</span>
         </div>
         <button onClick={() => setMobileOpen(false)} className="md:hidden text-gray-500 hover:text-white">
@@ -92,9 +90,7 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout, walletBalance = "0,00" }) 
       {/* Mobile top bar */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-40 h-14 bg-space-950 border-b border-white/5 flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 jupiter-gradient rounded-lg flex items-center justify-center shrink-0">
-            <Box className="text-white" size={14} />
-          </div>
+          <img src="/amogaddy-s_VPS/logo.png" alt="logo" className="w-7 h-7 rounded-lg shrink-0 object-cover" />
           <span className="font-bold text-sm">amogaddy's VPS</span>
         </div>
         <button onClick={() => setMobileOpen(true)} className="text-gray-400 hover:text-white">

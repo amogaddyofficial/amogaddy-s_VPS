@@ -19,8 +19,8 @@ const LandingPage = ({ onEnter }) => {
       {/* Navbar */}
       <nav className="border-b border-white/5 bg-space-950/50 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Box className="text-jupiter-500" size={32} />
+          <div className="flex items-center gap-3">
+            <img src="/amogaddy-s_VPS/logo.png" alt="logo" className="w-10 h-10 rounded-xl object-cover" />
             <span className="text-2xl font-bold tracking-tighter">amogaddy's VPS</span>
           </div>
           <div className="flex items-center gap-4">
@@ -167,12 +167,88 @@ const LandingPage = ({ onEnter }) => {
         </div>
       </section>
 
+      {/* Sezione due piani principali */}
+      <section className="max-w-5xl mx-auto px-4 md:px-6 py-24 border-t border-white/5">
+        <div className="text-center mb-14">
+          <span className="text-xs font-black text-jupiter-500 uppercase tracking-[0.3em] block mb-3">I due pilastri</span>
+          <h2 className="text-4xl font-bold mb-3">Gratis o a Consumo. Tu scegli.</h2>
+          <p className="text-gray-400">Nessun costo fisso nascosto. Parti gratis, scala quando vuoi.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Piano FREE */}
+          <div className="relative rounded-3xl border border-green-500/30 bg-green-500/[0.03] p-8 flex flex-col">
+            <div className="absolute top-5 right-5">
+              <span className="text-[10px] font-black uppercase tracking-widest bg-green-500/20 text-green-400 border border-green-500/30 px-3 py-1 rounded-full">Per sempre gratis</span>
+            </div>
+            <div className="text-4xl mb-4">🆓</div>
+            <h3 className="text-2xl font-bold mb-1">Piano Gratuito</h3>
+            <div className="text-4xl font-black text-green-400 mb-6">0,00€</div>
+            <ul className="space-y-3 mb-8 flex-1">
+              {[
+                ['CPU Shared 10% max', 'green'],
+                ['RAM 128–256 MB', 'green'],
+                ['100 MB Storage', 'green'],
+                ['Python · Node.js · Go · HTML', 'green'],
+                ['Reset automatico 12:00 IT', 'yellow'],
+                ['Rotazione nodi domenicale', 'yellow'],
+                ['Caveau Git dopo 3gg inattività', 'red'],
+                ['Sostenuto da annunci', 'gray'],
+              ].map(([f, c], i) => (
+                <li key={i} className="flex items-center gap-3 text-sm">
+                  <span className={c === 'green' ? 'text-green-400' : c === 'yellow' ? 'text-yellow-400' : c === 'red' ? 'text-red-400' : 'text-gray-500'}>
+                    {c === 'red' ? '⚠' : c === 'yellow' ? '↻' : '✓'}
+                  </span>
+                  <span className={c === 'gray' ? 'text-gray-500' : 'text-gray-300'}>{f}</span>
+                </li>
+              ))}
+            </ul>
+            <Button className="w-full py-4 text-base bg-green-500/20 border border-green-500/40 text-green-400 hover:bg-green-500/30" onClick={onEnter}>
+              Inizia Gratis →
+            </Button>
+          </div>
+
+          {/* Piano PAAS */}
+          <div className="relative rounded-3xl border border-jupiter-500/50 bg-jupiter-500/[0.04] p-8 flex flex-col jupiter-glow">
+            <div className="absolute top-5 right-5">
+              <span className="text-[10px] font-black uppercase tracking-widest bg-jupiter-500/20 text-jupiter-400 border border-jupiter-500/30 px-3 py-1 rounded-full">Enterprise</span>
+            </div>
+            <div className="text-4xl mb-4">🚀</div>
+            <h3 className="text-2xl font-bold mb-1">Piano PaaS</h3>
+            <div className="text-4xl font-black text-jupiter-400 mb-1">Wallet</div>
+            <div className="text-sm text-gray-500 mb-6">Pay-per-second · Ricarica minima 1,50€ · Solo PayPal</div>
+            <ul className="space-y-3 mb-8 flex-1">
+              {[
+                ['CPU Dedicata 100%', 'green'],
+                ['RAM dedicata e garantita', 'green'],
+                ['Docker · Ubuntu · Windows · macOS', 'green'],
+                ['Istanza FISSA (no rotazione)', 'green'],
+                ['SSH IP:Porta dedicato', 'green'],
+                ['100% porte sbloccate', 'green'],
+                ['Qualsiasi DB SQL/NoSQL', 'green'],
+                ['Sleep Mode a saldo zero (file intatti)', 'yellow'],
+              ].map(([f, c], i) => (
+                <li key={i} className="flex items-center gap-3 text-sm">
+                  <span className={c === 'yellow' ? 'text-yellow-400' : 'text-jupiter-400'}>
+                    {c === 'yellow' ? '↻' : '✓'}
+                  </span>
+                  <span className="text-gray-300">{f}</span>
+                </li>
+              ))}
+            </ul>
+            <Button className="w-full py-4 text-base" onClick={onEnter}>
+              Configura PaaS →
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="border-t border-white/5 py-20 bg-black/20">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Box className="text-jupiter-500" size={24} />
+            <div className="flex items-center gap-3">
+              <img src="/amogaddy-s_VPS/logo.png" alt="logo" className="w-8 h-8 rounded-lg object-cover" />
               <span className="text-xl font-bold tracking-tighter">amogaddy's VPS</span>
             </div>
             <p className="text-sm text-gray-500">amogaddy's VPS & Tema Giove. © 2024</p>
