@@ -16,11 +16,15 @@ err()  { echo -e "${RED}[ERR]${NC} $1"; exit 1; }
 
 echo "========================================"
 echo "  CloudBox PaaS — Setup VPS"
-echo "  Ubuntu 22.04 | utente: ubuntu"
+echo "  Ubuntu 22.04 | utente: ${SUDO_USER:-$(logname 2>/dev/null || echo ubuntu)}"
 echo "========================================"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(dirname "$SCRIPT_DIR")"
+
+# Utente reale (chi ha lanciato sudo, non root)
+REAL_USER="${SUDO_USER:-$(logname 2>/dev/null || echo ubuntu)}"
+REAL_HOME=$(eval echo "~$REAL_USER")
 
 # ── 1. Aggiornamento sistema ─────────────────────────────────────────────────
 info "Aggiornamento pacchetti..."
@@ -41,7 +45,7 @@ if ! command -v docker &>/dev/null; then
     curl -fsSL https://get.docker.com | bash -s -- --quiet
     systemctl enable docker --quiet
     systemctl start docker
-    usermod -aG docker ubuntu
+    usermod -aG docker "$REAL_USER"
     ok "Docker installato"
 else
     ok "Docker già presente ($(docker --version | cut -d' ' -f3 | tr -d ','))"
@@ -54,7 +58,7 @@ info "Creazione struttura /opt/vigilante..."
 mkdir -p /opt/vigilante/{data,logs,projects}
 mkdir -p /opt/vigilante/docker/templates/{python,node,go,html}
 mkdir -p /opt/vigilante/frontend
-chown -R ubuntu:ubuntu /opt/vigilante
+chown -R "$REAL_USER":"$REAL_USER" /opt/vigilante
 ok "Directory create"
 
 # ── 4. Copia file backend ────────────────────────────────────────────────────
