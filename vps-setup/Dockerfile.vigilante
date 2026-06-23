@@ -1,0 +1,25 @@
+FROM debian:12-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libsqlite3-dev \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Installa Docker CLI (solo il client, il daemon gira sull'host via socket)
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
+    echo "deb [arch=amd64] https://download.docker.com/linux/debian bookworm stable" \
+    > /etc/apt/sources.list.d/docker.list && \
+    apt-get update && apt-get install -y --no-install-recommends docker-ce-cli && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /opt/vigilante
+
+COPY vigilante.c .
+RUN gcc -O2 -pthread vigilante.c -lsqlite3 -o vigilante
+
+RUN mkdir -p data logs projects
+
+EXPOSE 8080
+CMD ["./vigilante"]

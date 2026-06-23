@@ -1,0 +1,79 @@
+# structure.yaml — Regole di auto-detection runtime per il modulo "Metti Online"
+# Il sistema analizza i file caricati e seleziona automaticamente
+# l'ambiente di esecuzione + i comandi di installazione corretti.
+
+version: "1.0"
+
+detection_rules:
+
+  - name: "Python (Discord Bot)"
+    priority: 10
+    triggers:
+      files_present:   ["requirements.txt"]
+      content_contains: ["import discord", "from discord"]
+    runtime: "python:3.11-slim"
+    install:
+      - "pip install --no-cache-dir -r requirements.txt"
+    start_cmd: "python main.py"
+    env_hints:
+      - "DISCORD_TOKEN"
+
+  - name: "Python (generico)"
+    priority: 5
+    triggers:
+      files_present:   ["requirements.txt"]
+    runtime: "python:3.11-slim"
+    install:
+      - "pip install --no-cache-dir -r requirements.txt"
+    start_cmd: "python main.py"
+
+  - name: "Node.js"
+    priority: 10
+    triggers:
+      files_present: ["package.json"]
+    runtime: "node:20-alpine"
+    install:
+      - "npm install --omit=dev"
+    start_cmd: "node index.js"
+    fallback_start: "npm start"
+
+  - name: "Go"
+    priority: 8
+    triggers:
+      files_present: ["go.mod"]
+    runtime: "golang:1.21-alpine"
+    install:
+      - "go mod download"
+      - "go build -o app ."
+    start_cmd: "./app"
+
+  - name: "HTML Statico"
+    priority: 1
+    triggers:
+      files_present: ["index.html"]
+      files_absent:  ["package.json", "requirements.txt", "go.mod"]
+    runtime: "nginx:alpine"
+    install: []
+    start_cmd: "nginx -g 'daemon off;'"
+
+# Modulo Chipping — file da rimuovere dopo ogni build per ottimizzare il container
+chipping:
+  remove_dirs:
+    - "test/"
+    - "tests/"
+    - "docs/"
+    - "__pycache__/"
+    - ".pytest_cache/"
+    - "node_modules/.cache/"
+    - ".git/"
+  remove_files:
+    - "*.md"
+    - "*.map"
+    - "*.log"
+    - ".env.example"
+    - "Makefile"
+    - "*.test.js"
+    - "*.spec.js"
+    - "*.test.py"
+  keep_always:
+    - "README.md"   # solo se presente nella root del progetto originale

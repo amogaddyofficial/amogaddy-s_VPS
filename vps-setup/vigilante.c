@@ -88,17 +88,19 @@ void db_init(void) {
         "  message   TEXT NOT NULL"
         ");";
 
-    /* Tabella istanze simulate */
+    /* Tabella istanze */
     const char *sql_instances =
         "CREATE TABLE IF NOT EXISTS instances ("
-        "  id        TEXT PRIMARY KEY,"
-        "  plan      TEXT NOT NULL,"     /* 'free' | 'paas' */
-        "  status    TEXT NOT NULL,"     /* 'running' | 'sleeping' | 'caveau' */
-        "  node      TEXT NOT NULL,"
-        "  runtime   TEXT NOT NULL,"
-        "  wallet    REAL DEFAULT 0.0,"
-        "  created   DATETIME DEFAULT CURRENT_TIMESTAMP,"
-        "  last_seen DATETIME DEFAULT CURRENT_TIMESTAMP"
+        "  id           TEXT PRIMARY KEY,"
+        "  plan         TEXT NOT NULL,"        /* 'free' | 'paas' */
+        "  status       TEXT NOT NULL,"        /* 'running' | 'sleeping' | 'caveau' | 'error' */
+        "  node         TEXT NOT NULL,"
+        "  runtime      TEXT NOT NULL,"
+        "  wallet       REAL DEFAULT 0.0,"
+        "  container_id TEXT DEFAULT '',"      /* Docker container ID corto */
+        "  start_cmd    TEXT DEFAULT '',"
+        "  created      DATETIME DEFAULT CURRENT_TIMESTAMP,"
+        "  last_seen    DATETIME DEFAULT CURRENT_TIMESTAMP"
         ");";
 
     char *err = NULL;
@@ -218,6 +220,210 @@ void send_response(int fd, int code, const char *body) {
 }
 
 /* ────────────────────────────────────────────────
+   DEPLOY — crea container Docker reale
+──────────────────────────────────────────────── */
+
+/* Estrae il valore di una chiave JSON stringa: "key":"value" */
+static int json_get_str(const char *json, const char *key, char *out, size_t out_len) {
+    char needle[64];
+    snprintf(needle, sizeof(needle), "\"%s\":", key);
+    const char *p = strstr(json, needle);
+    if (!p) return 0;
+    p += strlen(needle);
+    while (*p == ' ') p++;
+    if (*p != '"') return 0;
+    p++;
+    size_t i = 0;
+    while (*p && *p != '"' && i < out_len - 1) {
+        if (*p == '\\') p++;   /* gestione escape base */
+        out[i++] = *p++;
+    }
+    out[i] = '\0';
+    return 1;
+}
+
+void handle_deploy(int fd, const char *body) {
+    if (!body) { send_response(fd, 400, "{\"error\":\"body mancante\"}"); return; }
+
+    char name[64]      = {0};
+    char runtime[32]   = {0};
+    char start_cmd[256] = {0};
+
+    if (!json_get_str(body, "name",    name,      sizeof(name)))    { send_response(fd, 400, "{\"error\":\"name obbligatorio\"}");    return; }
+    if (!json_get_str(body, "runtime", runtime,   sizeof(runtime))) { send_response(fd, 400, "{\"error\":\"runtime obbligatorio\"}"); return; }
+    json_get_str(body, "start_cmd", start_cmd, sizeof(start_cmd));
+
+    /* Genera ID istanza univoco */
+    char inst_id[80];
+    snprintf(inst_id, sizeof(inst_id), "app-%s-%06X", name, (unsigned)(time(NULL) & 0xFFFFFF));
+
+    /* Crea directory progetto sul filesystem dell'host */
+    char proj_dir[256];
+    snprintf(proj_dir, sizeof(proj_dir), "/opt/vigilante/projects/%s", inst_id);
+
+    char mkdir_cmd[300];
+    snprintf(mkdir_cmd, sizeof(mkdir_cmd), "mkdir -p '%s'", proj_dir);
+    system(mkdir_cmd);
+
+    /* Chiama launch_app.sh che fa docker build + docker run */
+    char launch_cmd[768];
+    snprintf(launch_cmd, sizeof(launch_cmd),
+        "/opt/vigilante/launch_app.sh '%s' '%s' '%s' 2>/dev/null",
+        inst_id, runtime, start_cmd[0] ? start_cmd : "sh start.sh");
+
+    char container_id[72] = {0};
+    FILE *pipe = popen(launch_cmd, "r");
+    if (pipe) {
+        if (fgets(container_id, sizeof(container_id), pipe)) {
+            char *nl = strchr(container_id, '\n');
+            if (nl) *nl = '\0';
+        }
+        pclose(pipe);
+    }
+
+    const char *status = container_id[0] ? "running" : "error";
+
+    /* Salva istanza nel DB */
+    pthread_mutex_lock(&db_mutex);
+    sqlite3_stmt *stmt;
+    const char *sql =
+        "INSERT INTO instances(id,plan,status,node,runtime,wallet,container_id,start_cmd) "
+        "VALUES(?,?,?,?,?,?,?,?);";
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+        sqlite3_bind_text(stmt, 1, inst_id,      -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 2, "free",        -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 3, status,        -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 4, "cloudbox-node-1", -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 5, runtime,       -1, SQLITE_STATIC);
+        sqlite3_bind_double(stmt, 6, 0.0);
+        sqlite3_bind_text(stmt, 7, container_id,  -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 8, start_cmd,     -1, SQLITE_STATIC);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+    }
+    pthread_mutex_unlock(&db_mutex);
+
+    char log_buf[128];
+    snprintf(log_buf, sizeof(log_buf), "Deploy '%s' runtime=%s status=%s", inst_id, runtime, status);
+    db_log(container_id[0] ? "INFO" : "ERROR", log_buf);
+
+    char resp[512];
+    if (container_id[0]) {
+        snprintf(resp, sizeof(resp),
+            "{\"ok\":true,\"id\":\"%s\",\"runtime\":\"%s\",\"container\":\"%s\",\"status\":\"running\"}",
+            inst_id, runtime, container_id);
+        send_response(fd, 200, resp);
+    } else {
+        snprintf(resp, sizeof(resp),
+            "{\"ok\":false,\"id\":\"%s\",\"error\":\"avvio container fallito\"}",
+            inst_id);
+        send_response(fd, 500, resp);
+    }
+}
+
+/* POST /container-stop — body: {"id":"app-..."} */
+void handle_container_stop(int fd, const char *body) {
+    if (!body) { send_response(fd, 400, "{\"error\":\"body mancante\"}"); return; }
+
+    char inst_id[80] = {0};
+    if (!json_get_str(body, "id", inst_id, sizeof(inst_id))) {
+        send_response(fd, 400, "{\"error\":\"id obbligatorio\"}");
+        return;
+    }
+
+    /* Leggi container_id dal DB */
+    pthread_mutex_lock(&db_mutex);
+    sqlite3_stmt *stmt;
+    char container_id[72] = {0};
+    const char *sel = "SELECT container_id FROM instances WHERE id=?;";
+    if (sqlite3_prepare_v2(db, sel, -1, &stmt, NULL) == SQLITE_OK) {
+        sqlite3_bind_text(stmt, 1, inst_id, -1, SQLITE_STATIC);
+        if (sqlite3_step(stmt) == SQLITE_ROW)
+            strncpy(container_id, (const char*)sqlite3_column_text(stmt, 0), sizeof(container_id) - 1);
+        sqlite3_finalize(stmt);
+    }
+    pthread_mutex_unlock(&db_mutex);
+
+    if (!container_id[0]) {
+        send_response(fd, 404, "{\"error\":\"istanza non trovata\"}");
+        return;
+    }
+
+    /* docker stop */
+    char stop_cmd[128];
+    snprintf(stop_cmd, sizeof(stop_cmd), "docker stop '%s' > /dev/null 2>&1", container_id);
+    int rc = system(stop_cmd);
+
+    /* Aggiorna stato nel DB */
+    pthread_mutex_lock(&db_mutex);
+    sqlite3_stmt *upd;
+    const char *sql = "UPDATE instances SET status='sleeping', last_seen=CURRENT_TIMESTAMP WHERE id=?;";
+    if (sqlite3_prepare_v2(db, sql, -1, &upd, NULL) == SQLITE_OK) {
+        sqlite3_bind_text(upd, 1, inst_id, -1, SQLITE_STATIC);
+        sqlite3_step(upd);
+        sqlite3_finalize(upd);
+    }
+    pthread_mutex_unlock(&db_mutex);
+
+    char log_buf[128];
+    snprintf(log_buf, sizeof(log_buf), "Container fermato: %s (rc=%d)", container_id, rc);
+    db_log("INFO", log_buf);
+
+    send_response(fd, 200, "{\"ok\":true,\"action\":\"stop\"}");
+}
+
+/* GET /container-logs?id=app-... */
+void handle_container_logs(int fd, const char *query) {
+    char inst_id[80] = {0};
+    if (query) {
+        const char *p = strstr(query, "id=");
+        if (p) strncpy(inst_id, p + 3, sizeof(inst_id) - 1);
+        char *amp = strchr(inst_id, '&');
+        if (amp) *amp = '\0';
+    }
+    if (!inst_id[0]) { send_response(fd, 400, "{\"error\":\"id obbligatorio\"}"); return; }
+
+    /* Leggi container_id dal DB */
+    pthread_mutex_lock(&db_mutex);
+    sqlite3_stmt *stmt;
+    char container_id[72] = {0};
+    const char *sel = "SELECT container_id FROM instances WHERE id=?;";
+    if (sqlite3_prepare_v2(db, sel, -1, &stmt, NULL) == SQLITE_OK) {
+        sqlite3_bind_text(stmt, 1, inst_id, -1, SQLITE_STATIC);
+        if (sqlite3_step(stmt) == SQLITE_ROW)
+            strncpy(container_id, (const char*)sqlite3_column_text(stmt, 0), sizeof(container_id) - 1);
+        sqlite3_finalize(stmt);
+    }
+    pthread_mutex_unlock(&db_mutex);
+
+    if (!container_id[0]) { send_response(fd, 404, "{\"error\":\"istanza non trovata\"}"); return; }
+
+    char logs_cmd[128];
+    snprintf(logs_cmd, sizeof(logs_cmd), "docker logs --tail 50 '%s' 2>&1", container_id);
+
+    FILE *pipe = popen(logs_cmd, "r");
+    if (!pipe) { send_response(fd, 500, "{\"error\":\"impossibile leggere logs\"}"); return; }
+
+    char log_body[8192];
+    strcpy(log_body, "{\"logs\":\"");
+    char line[256];
+    size_t pos = strlen(log_body);
+    while (fgets(line, sizeof(line), pipe) && pos < sizeof(log_body) - 20) {
+        /* Escape JSON base */
+        for (char *c = line; *c && pos < sizeof(log_body) - 20; c++) {
+            if (*c == '"')       log_body[pos++] = '\\', log_body[pos++] = '"';
+            else if (*c == '\\') log_body[pos++] = '\\', log_body[pos++] = '\\';
+            else if (*c == '\n') log_body[pos++] = '\\', log_body[pos++] = 'n';
+            else                 log_body[pos++] = *c;
+        }
+    }
+    pclose(pipe);
+    log_body[pos] = '\0';
+    strncat(log_body, "\"}", sizeof(log_body) - strlen(log_body) - 1);
+    send_response(fd, 200, log_body);
+}
+
+/* ────────────────────────────────────────────────
    HANDLERS delle API
 ──────────────────────────────────────────────── */
 
@@ -289,14 +495,14 @@ void handle_instances(int fd) {
                 "\"last_seen\":\"%s\""
                 "}",
                 first ? "" : ",",
-                sqlite3_column_text(stmt, 0),
-                sqlite3_column_text(stmt, 1),
-                sqlite3_column_text(stmt, 2),
-                sqlite3_column_text(stmt, 3),
-                sqlite3_column_text(stmt, 4),
+                (const char*)sqlite3_column_text(stmt, 0),
+                (const char*)sqlite3_column_text(stmt, 1),
+                (const char*)sqlite3_column_text(stmt, 2),
+                (const char*)sqlite3_column_text(stmt, 3),
+                (const char*)sqlite3_column_text(stmt, 4),
                 sqlite3_column_double(stmt, 5),
-                sqlite3_column_text(stmt, 6),
-                sqlite3_column_text(stmt, 7));
+                (const char*)sqlite3_column_text(stmt, 6),
+                (const char*)sqlite3_column_text(stmt, 7));
             strncat(body, entry, sizeof(body) - strlen(body) - 1);
             first = 0;
         }
@@ -333,9 +539,9 @@ void handle_logs(int fd, const char *query) {
             snprintf(entry, sizeof(entry),
                 "%s{\"ts\":\"%s\",\"level\":\"%s\",\"msg\":\"%s\"}",
                 first ? "" : ",",
-                sqlite3_column_text(stmt, 0),
-                sqlite3_column_text(stmt, 1),
-                sqlite3_column_text(stmt, 2));
+                (const char*)sqlite3_column_text(stmt, 0),
+                (const char*)sqlite3_column_text(stmt, 1),
+                (const char*)sqlite3_column_text(stmt, 2));
             strncat(body, entry, sizeof(body) - strlen(body) - 1);
             first = 0;
         }
@@ -497,6 +703,15 @@ void *handle_client(void *arg) {
 
     } else if (strcmp(path, "/command") == 0 && strcmp(method, "POST") == 0) {
         handle_command(fd, body);
+
+    } else if (strcmp(path, "/deploy") == 0 && strcmp(method, "POST") == 0) {
+        handle_deploy(fd, body);
+
+    } else if (strcmp(path, "/container-stop") == 0 && strcmp(method, "POST") == 0) {
+        handle_container_stop(fd, body);
+
+    } else if (strcmp(path, "/container-logs") == 0) {
+        handle_container_logs(fd, query);
 
     } else {
         send_response(fd, 400, "{\"error\":\"endpoint sconosciuto\"}");

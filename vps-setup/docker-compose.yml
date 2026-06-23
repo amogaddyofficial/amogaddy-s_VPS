@@ -1,0 +1,83 @@
+version: '3.9'
+
+# ── Rete interna isolata per tutti i servizi CloudBox ──
+networks:
+  cloudbox-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+
+  # Rete separata per i container utente (isolati dal resto)
+  user-apps-net:
+    driver: bridge
+    internal: true
+
+volumes:
+  vigilante-data:
+  vigilante-logs:
+
+services:
+
+  # ── Backend principale (C HTTP server) ──────────────────────────────────────
+  vigilante:
+    build:
+      context: .
+      dockerfile: Dockerfile.vigilante
+    container_name: vigilante
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - vigilante-data:/opt/vigilante/data
+      - vigilante-logs:/opt/vigilante/logs
+      - /opt/vigilante/projects:/opt/vigilante/projects  # directory progetti utente
+      - /var/run/docker.sock:/var/run/docker.sock         # permesso di creare container
+      - ./launch_app.sh:/opt/vigilante/launch_app.sh:ro
+      - ./docker:/opt/vigilante/docker:ro
+      - ./structure.yaml:/opt/vigilante/structure.yaml:ro
+    environment:
+      - TZ=Europe/Rome
+    networks:
+      - cloudbox-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ── SSH Key Manager (Python HTTP server) ────────────────────────────────────
+  ssh-manager:
+    build:
+      context: .
+      dockerfile: Dockerfile.ssh_manager
+    container_name: ssh-manager
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8081:8081"
+    volumes:
+      - ~/.ssh:/root/.ssh
+    environment:
+      - VPS_HOST=${VPS_HOST:-localhost}
+      - VPS_USER=${VPS_USER:-app}
+      - VPS_SSH_PORT=${VPS_SSH_PORT:-22}
+    networks:
+      - cloudbox-net
+
+  # ── Nginx — reverse proxy + HTTPS ───────────────────────────────────────────
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /opt/vigilante/frontend:/usr/share/nginx/html:ro  # build Vite
+    depends_on:
+      vigilante:
+        condition: service_healthy
+    networks:
+      - cloudbox-net
